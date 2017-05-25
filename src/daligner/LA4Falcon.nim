@@ -14,7 +14,7 @@ from parseopt as popt import nil
 from strutils import `%`
 from os import nil
 import
-  dazz_db/DB, dazz_db/DBX, dazz_db/align, dazz_db/license_myers, dazz_db/common
+  DB, DBX, align, license_myers, common
 import align
 
 const

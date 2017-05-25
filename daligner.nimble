@@ -2,7 +2,7 @@
 
 version       = "0.0.0"
 author        = "Christopher Dunn"
-description   = "Nim wrapper/translations of DALIGNER (Gene Myers), with additions by PacBio (Jason Chin, et al.)"
+description   = "Nim wrappers/translations of DALIGNER (Gene Myers), with additions by PacBio (Jason Chin, et al.)"
 license       = "BSD 3 Clear"
 
 # Dependencies
