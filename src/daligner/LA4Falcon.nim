@@ -1,12 +1,12 @@
 ##  vim: set et ts=2 sts=2 sw=2 :
-## 
+##
 ##   Utility for displaying the overlaps in a .las file in a variety of ways including
 ##     a minimal listing of intervals, a cartoon, and a full out alignment.
-## 
+##
 ##   Author:    Gene Myers
 ##   Creation:  July 2013
 ##   Last Mod:  Jan 2015
-## 
+##
 ##   Based on the original LAshow.c, this code is modified by Jason Chin to support generating
 ##     consensus sequences from daligner output
 #import parseopt as popt
