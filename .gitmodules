@@ -1,3 +1,6 @@
 [submodule "repos/DALIGNER"]
 	path = repos/DALIGNER
 	url = git://github.com/bio-nim/DALIGNER.git
+[submodule "repos/DAZZ_DB"]
+	path = repos/DAZZ_DB
+	url = git://github.com/bio-nim/DAZZ_DB
