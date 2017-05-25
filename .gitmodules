@@ -1,0 +1,3 @@
+[submodule "repos/DALIGNER"]
+	path = repos/DALIGNER
+	url = git://github.com/bio-nim/DALIGNER.git
