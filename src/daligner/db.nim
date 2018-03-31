@@ -110,7 +110,7 @@ const
 ##   Fields have different interpretations if a .db versus a .dam
 
 type
-  HITS_READ* {.importc: "HITS_READ", header: "DB.h".} = object
+  DAZZ_READ* {.importc: "DAZZ_READ", header: "DB.h".} = object
     origin* {.importc: "origin".}: cint ##   Well # (DB), Contig # (DAM)
     rlen* {.importc: "rlen".}: cint ##   Length of the sequence (Last pulse = fpulse + rlen)
     fpulse* {.importc: "fpulse".}: cint ##   First pulse (DB), left index of contig in scaffold (DAM)
@@ -130,22 +130,22 @@ type
 ##                                     contains the variable length data
 
 type
-  HITS_TRACK* {.importc: "HITS_TRACK", header: "DB.h".} = object
-    next* {.importc: "next".}: ptr HITS_TRACK ##   Link to next track
+  DAZZ_TRACK* {.importc: "DAZZ_TRACK", header: "DB.h".} = object
+    next* {.importc: "next".}: ptr DAZZ_TRACK ##   Link to next track
     name* {.importc: "name".}: cstring ##   Symbolic name of track
     size* {.importc: "size".}: cint ##   Size in bytes of anno records
     anno* {.importc: "anno".}: pointer ##   over [0,nreads]: read i annotation: int, int64, or 'size' records
     data* {.importc: "data".}: pointer ##      data[anno[i] .. anno[i+1]-1] is data if data != NULL
   
 
-##   The information for accessing QV streams is in a HITS_QV record that is a "pseudo-track"
+##   The information for accessing QV streams is in a DAZZ_QV record that is a "pseudo-track"
 ##     named ".@qvs" and is always the first track record in the list (if present).  Since normal
 ##     track names cannot begin with a . (this is enforced), this pseudo-track is never confused
 ##     with a normal track.
 
 type
-  HITS_QV* {.importc: "HITS_QV", header: "DB.h".} = object
-    next* {.importc: "next".}: ptr HITS_TRACK
+  DAZZ_QV* {.importc: "DAZZ_QV", header: "DB.h".} = object
+    next* {.importc: "next".}: ptr DAZZ_TRACK
     name* {.importc: "name".}: cstring
     ncodes* {.importc: "ncodes".}: cint ##   # of coding tables
     coding* {.importc: "coding".}: ptr QVcoding ##   array [0..ncodes-1] of coding schemes (see QV.h)
@@ -155,11 +155,11 @@ type
   
 
 ##   The DB record holds all information about the current state of an active DB including an
-##     array of HITS_READS, one per read, and a linked list of HITS_TRACKs the first of which
-##     is always a HITS_QV pseudo-track (if the QVs have been loaded).
+##     array of DAZZ_READS, one per read, and a linked list of DAZZ_TRACKs the first of which
+##     is always a DAZZ_QV pseudo-track (if the QVs have been loaded).
 
 type
-  HITS_DB* {.importc: "HITS_DB", header: "DB.h".} = object
+  DAZZ_DB* {.importc: "DAZZ_DB", header: "DB.h".} = object
     ureads* {.importc: "ureads".}: cint ##   Total number of reads in untrimmed DB
     treads* {.importc: "treads".}: cint ##   Total number of reads in trimmed DB
     cutoff* {.importc: "cutoff".}: cint ##   Minimum read length in block (-1 if not yet set)
@@ -182,8 +182,8 @@ type
     loaded* {.importc: "loaded".}: cint ##   Are reads loaded in memory?
     bases* {.importc: "bases".}: pointer ##   file pointer for bases file (to fetch reads from),
                                      ##     or memory pointer to uncompressed block of all sequences.
-    reads* {.importc: "reads".}: ptr HITS_READ ##   Array [-1..nreads] of HITS_READ
-    tracks* {.importc: "tracks".}: ptr HITS_TRACK ##   Linked list of loaded tracks
+    reads* {.importc: "reads".}: ptr DAZZ_READ ##   Array [-1..nreads] of DAZZ_READ
+    tracks* {.importc: "tracks".}: ptr DAZZ_TRACK ##   Linked list of loaded tracks
   
 
 ## ******************************************************************************************
@@ -214,7 +214,7 @@ const
 ##     2. .origin contains the contig # of the read within a fasta entry (assembly sequences
 ##           contain N-separated contigs), and .fpulse the first base of the contig in the
 ##           fasta entry
-##  Open the given database or dam, "path" into the supplied HITS_DB record "db". If the name has
+##  Open the given database or dam, "path" into the supplied DAZZ_DB record "db". If the name has
 ##    a part # in it then just the part is opened.  The index array is allocated (for all or
 ##    just the part) and read in.
 ##  Return status of routine:
@@ -222,30 +222,30 @@ const
 ##      0: Open of DB proceeded without mishap
 ##      1: Open of DAM proceeded without mishap
 # Note: path must be a writable string!
-proc Open_DB*(path: cstring; db: ptr HITS_DB): cint {.cdecl, importc: "Open_DB",
+proc Open_DB*(path: cstring; db: ptr DAZZ_DB): cint {.cdecl, importc: "Open_DB",
     header: "DB.h".}
 ##  Trim the DB or part thereof and all loaded tracks according to the cutoff and all settings
 ##    of the current DB partition.  Reallocate smaller memory blocks for the information kept
 ##    for the retained reads.
 
-proc Trim_DB*(db: ptr HITS_DB) {.cdecl, importc: "Trim_DB", header: "DB.h".}
+proc Trim_DB*(db: ptr DAZZ_DB) {.cdecl, importc: "Trim_DB", header: "DB.h".}
 ##  Shut down an open 'db' by freeing all associated space, including tracks and QV structures,
 ##    and any open file pointers.  The record pointed at by db however remains (the user
 ##    supplied it and so should free it).
 
-proc Close_DB*(db: ptr HITS_DB) {.cdecl, importc: "Close_DB", header: "DB.h".}
+proc Close_DB*(db: ptr DAZZ_DB) {.cdecl, importc: "Close_DB", header: "DB.h".}
 ##  Return the size in bytes of the given DB
 
-proc sizeof_DB*(db: ptr HITS_DB): int64 {.cdecl, importc: "sizeof_DB", header: "DB.h".}
+proc sizeof_DB*(db: ptr DAZZ_DB): int64 {.cdecl, importc: "sizeof_DB", header: "DB.h".}
 ##  If QV pseudo track is not already in db's track list, then load it and set it up.
 ##    The database must not have been trimmed yet.  -1 is returned if a .qvs file is not
 ##    present, and 1 is returned if an error (reported to EPLACE) occured and INTERACTIVE
 ##    is defined.  Otherwise a 0 is returned.
 
-proc Load_QVs*(db: ptr HITS_DB): cint {.cdecl, importc: "Load_QVs", header: "DB.h".}
+proc Load_QVs*(db: ptr DAZZ_DB): cint {.cdecl, importc: "Load_QVs", header: "DB.h".}
 ##  Remove the QV pseudo track, all space associated with it, and close the .qvs file.
 
-proc Close_QVs*(db: ptr HITS_DB) {.cdecl, importc: "Close_QVs", header: "DB.h".}
+proc Close_QVs*(db: ptr DAZZ_DB) {.cdecl, importc: "Close_QVs", header: "DB.h".}
 ##  Look up the file and header in the file of the indicated track.  Return:
 ##      1: Track is for trimmed DB
 ##      0: Track is for untrimmed DB
@@ -260,28 +260,28 @@ const
   CUSTOM_TRACK* = 0
   MASK_TRACK* = 1
 
-proc Check_Track*(db: ptr HITS_DB; track: cstring; kind: ptr cint): cint {.cdecl,
+proc Check_Track*(db: ptr DAZZ_DB; track: cstring; kind: ptr cint): cint {.cdecl,
     importc: "Check_Track", header: "DB.h".}
 ##  If track is not already in the db's track list, then allocate all the storage for it,
 ##    read it in from the appropriate file, add it to the track list, and return a pointer
-##    to the newly created HITS_TRACK record.  If the track does not exist or cannot be
+##    to the newly created DAZZ_TRACK record.  If the track does not exist or cannot be
 ##    opened for some reason, then NULL is returned if INTERACTIVE is defined.  Otherwise
 ##    the routine prints an error message to stderr and exits if an error occurs, and returns
 ##    with NULL only if the track does not exist.
 
-proc Load_Track*(db: ptr HITS_DB; track: cstring): ptr HITS_TRACK {.cdecl,
+proc Load_Track*(db: ptr DAZZ_DB; track: cstring): ptr DAZZ_TRACK {.cdecl,
     importc: "Load_Track", header: "DB.h".}
 ##  If track is on the db's track list, then it is removed and all storage associated with it
 ##    is freed.
 
-proc Close_Track*(db: ptr HITS_DB; track: cstring) {.cdecl, importc: "Close_Track",
+proc Close_Track*(db: ptr DAZZ_DB; track: cstring) {.cdecl, importc: "Close_Track",
     header: "DB.h".}
 ##  Allocate and return a buffer big enough for the largest read in 'db'.
 ##  **NB** free(x-1) if x is the value returned as *prefix* and suffix '\0'(4)-byte
 ##  are needed by the alignment algorithms.  If cannot allocate memory then return NULL
 ##  if INTERACTIVE is defined, or print error to stderr and exit otherwise.
 
-proc New_Read_Buffer*(db: ptr HITS_DB): ptr char {.cdecl, importc: "New_Read_Buffer",
+proc New_Read_Buffer*(db: ptr DAZZ_DB): ptr char {.cdecl, importc: "New_Read_Buffer",
     header: "DB.h".}
 ##  Load into 'read' the i'th read in 'db'.  As a lower case ascii string if ascii is 1, an
 ##    upper case ascii string if ascii is 2, and a numeric string over 0(A), 1(C), 2(G), and 3(T)
@@ -289,12 +289,12 @@ proc New_Read_Buffer*(db: ptr HITS_DB): ptr char {.cdecl, importc: "New_Read_Buf
 ##    for traversals in either direction.  A non-zero value is returned if an error occured
 ##    and INTERACTIVE is defined.
 
-proc Load_Read*(db: ptr HITS_DB; i: cint; read: cstring; ascii: cint): cint {.cdecl,
+proc Load_Read*(db: ptr DAZZ_DB; i: cint; read: cstring; ascii: cint): cint {.cdecl,
     importc: "Load_Read", header: "DB.h", discardable.}
 ##  Exactly the same as Load_Read, save the arrow information is loaded, not the DNA sequence,
 ##    and there is only a choice between numeric (0) or ascii (1);
 
-proc Load_Arrow*(db: ptr HITS_DB; i: cint; read: cstring; ascii: cint): cint {.cdecl,
+proc Load_Arrow*(db: ptr DAZZ_DB; i: cint; read: cstring; ascii: cint): cint {.cdecl,
     importc: "Load_Arrow", header: "DB.h".}
 ##  Load into 'read' the subread [beg,end] of the i'th read in 'db' and return a pointer to the
 ##    the start of the subinterval (not necessarily = to read !!! ).  As a lower case ascii
@@ -303,7 +303,7 @@ proc Load_Arrow*(db: ptr HITS_DB; i: cint; read: cstring; ascii: cint): cint {.c
 ##    the string holding the substring so it has a delimeter for traversals in either direction.
 ##    A NULL pointer is returned if an error occured and INTERACTIVE is defined.
 
-proc Load_Subread*(db: ptr HITS_DB; i: cint; beg: cint; `end`: cint; read: cstring;
+proc Load_Subread*(db: ptr DAZZ_DB; i: cint; beg: cint; `end`: cint; read: cstring;
                   ascii: cint): ptr char {.cdecl, importc: "Load_Subread",
                                        header: "DB.h".}
 ##  Allocate a set of 5 vectors large enough to hold the longest QV stream that will occur
@@ -317,13 +317,13 @@ const
   SUB_QV* = 3
   MRG_QV* = 4
 
-proc New_QV_Buffer*(db: ptr HITS_DB): cstringArray {.cdecl, importc: "New_QV_Buffer",
+proc New_QV_Buffer*(db: ptr DAZZ_DB): cstringArray {.cdecl, importc: "New_QV_Buffer",
     header: "DB.h".}
 ##  Load into 'entry' the 5 QV vectors for i'th read in 'db'.  The deletion tag or characters
 ##    are converted to a numeric or upper/lower case ascii string as per ascii.  Return with
 ##    a zero, except when an error occurs and INTERACTIVE is defined in which case return wtih 1.
 
-proc Load_QVentry*(db: ptr HITS_DB; i: cint; entry: cstringArray; ascii: cint): cint {.
+proc Load_QVentry*(db: ptr DAZZ_DB; i: cint; entry: cstringArray; ascii: cint): cint {.
     cdecl, importc: "Load_QVentry", header: "DB.h".}
 ##  Allocate a block big enough for all the uncompressed sequences, read them into it,
 ##    reset the 'off' in each read record to be its in-memory offset, and set the
@@ -333,7 +333,7 @@ proc Load_QVentry*(db: ptr HITS_DB; i: cint; entry: cstringArray; ascii: cint): 
 ##    Return with a zero, except when an error occurs and INTERACTIVE is defined in which
 ##    case return wtih 1.
 
-proc Read_All_Sequences*(db: ptr HITS_DB; ascii: cint): cint {.cdecl,
+proc Read_All_Sequences*(db: ptr DAZZ_DB; ascii: cint): cint {.cdecl,
     importc: "Read_All_Sequences", header: "DB.h".}
 ##  For the DB or DAM "path" = "prefix/root.[db|dam]", find all the files for that DB, i.e. all
 ##    those of the form "prefix/[.]root.part" and call actor with the complete path to each file

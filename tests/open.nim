@@ -7,7 +7,7 @@ from os import execShellCmd
 
 echo "DAZZ_DB test running ..."
 
-var mydb: db.HITS_DB = db.HITS_DB()
+var mydb: db.DAZZ_DB = db.DAZZ_DB()
 block:
   var badpath = "/badpath"
   doAssert -1 == db.Open_DB(badpath, addr mydb)
@@ -18,9 +18,9 @@ block:
   doAssert 0 == db.Open_DB(goodpath, addr mydb)
   db.Close_DB(addr mydb)
 block:
-  var mydbx: dbx.HITS_DBX = dbx.HITS_DBX()
+  var mydbx: dbx.DAZZ_DBX = dbx.DAZZ_DBX()
   dbx.Open_DBX(goodpath, addr mydbx, true)
-  dbx.Close_DBX(addr mydbx)
+  defer: dbx.Close_DBX(addr mydbx)
 block:
   doAssert 0 == os.execShellCmd("DBrm " & goodpath)
 

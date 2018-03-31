@@ -37,7 +37,7 @@ type
     blen*: cint
 
 common.usePtr[OverlapGroup]()
-common.usePtr[HITS_READ]()
+common.usePtr[DAZZ_READ]()
 common.usePtr[char]()
 
 var ovlgrps*: ptr OverlapGroup
@@ -103,7 +103,7 @@ type
 
 proc qsort(p: pointer, nel, width: csize, compar: qsort_cmp) {.cdecl, importc, header:"<stdlib.h>".}
 
-proc print_hits*(hit_count: cint; dbx2: ptr HITS_DBX; bbuffer: ptr char,
+proc print_hits*(hit_count: cint; dbx2: ptr DAZZ_DBX; bbuffer: ptr char,
                 print_scratch: var string; MAX_HIT_COUNT: cint) =
   var tmp_idx: cint
   let bsize = 1 shl 17 #capacity(print_scratch)
@@ -178,11 +178,11 @@ proc ARG_NON_NEGATIVE(flag: string, val: string): int =
   doAssert(result >= 0, "-$#=$# integer cannot be negative" % [flag, val])
 proc main*(): int =
   var
-    dbx1: HITS_DBX
+    dbx1: DAZZ_DBX
   var
-    dbx2: HITS_DBX
-  var db1: ptr HITS_DB = addr(dbx1.db)
-  var db2: ptr HITS_DB = addr(dbx2.db)
+    dbx2: DAZZ_DBX
+  var db1: ptr DAZZ_DB = addr(dbx1.db)
+  var db2: ptr DAZZ_DB = addr(dbx2.db)
   var
     v_ovl: Overlap
     ovl: ptr Overlap = addr(v_ovl)

@@ -2,7 +2,7 @@
 #include <string.h>
 
 int main(){
-    HITS_DB db;
+    DAZZ_DB db;
     db.loaded = db.bases = db.reads = db.tracks = 0;
     char const* name0 = "tmpdb.db";
     char* name = strdup(name0);
