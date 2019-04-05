@@ -13,11 +13,6 @@ srcDir = "./src"
 installDirs = @["daligner/"]
 bin = @["daligner/LA4Falcon"]
 
-if not fileExists("repos/DALIGNER/align.h"):
-    let msg = "git submodule update --init"
-    echo msg
-    exec(msg)
-
 task test, "Test daligner wrapper":
     withDir("tests"):
         exec("make")
