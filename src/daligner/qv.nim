@@ -1,4 +1,8 @@
 # vim: sw=2 ts=2 sts=2 tw=80 et:
+from os import DirSep
+from strutils import rsplit
+const thisdir = system.currentSourcePath.rsplit(DirSep, 1)[0]
+{.passC: "-I" & thisdir.}
 {.compile: "QV.c".}
 ## ******************************************************************************************
 ## 
