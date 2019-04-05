@@ -10,6 +10,8 @@ license       = "BSD 3 Clear"
 requires "nim >= 0.17.0"
 
 srcDir = "./src"
+installDirs = @["daligner/"]
+bin = @["daligner/LA4Falcon"]
 
 if not fileExists("repos/DALIGNER/align.h"):
     let msg = "git submodule update --init"
