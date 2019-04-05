@@ -14,7 +14,7 @@ from parseopt as popt import nil
 from strutils import `%`
 from os import nil
 import
-  DB, DBX, align, license_myers, common
+  db, dbx, align, license_myers, common
 import align
 
 const
@@ -393,6 +393,7 @@ proc main*(): int =
             inc(reps)
             pts[reps] = b
             inc(reps)
+            inc(c)
             continue
           elif eptr[] == '-':
             if eptr[1] == LAST_READ_SYMBOL:
@@ -408,11 +409,11 @@ proc main*(): int =
               if b > e:
                 fprintf(stderr, "%s: Empty range \'%s\'\x0A", Prog_Name, argv[c])
                 system.quit(system.QuitFailure)
+              inc(c)
               continue
         fprintf(stderr, "%s: argument \'%s\' is not an integer range\x0A",
                 Prog_Name, argv[c])
         system.quit(system.QuitFailure)
-        inc(c)
       qsort(addr(pts[0]), reps div 2, 2*sizeof(cint), ORDER)
       b = 0
       c = 0
